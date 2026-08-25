@@ -20,6 +20,9 @@ function Header({ user, credits }: { user: any; credits: number }) {
           <Link to="/library" className="hover:text-rose-600">My library</Link>
         </nav>
         <div className="flex items-center gap-3">
+          <span className="hidden items-center gap-1 rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700 md:flex">
+            HELLO {user ? (user.email || "").split("@")[0].slice(0, 12) : "Guest"}
+          </span>
           <Link to="/wallet" className="hidden rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700 sm:block">
             ⭐ {credits} credits
           </Link>
@@ -98,30 +101,41 @@ function Home() {
   return (
     <div>
       <section className="border-b border-gray-200 bg-gradient-to-b from-rose-50 to-white">
-        <div className="container-page grid items-center gap-10 py-16 md:grid-cols-2">
+        <div className="container-page grid items-center gap-10 py-14 md:grid-cols-2">
           <div>
-            <div className="mb-4 inline-block rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold text-rose-700">
-              Expert relationship education
-            </div>
-            <h1 className="text-4xl font-bold leading-tight md:text-5xl">
-              Your shelf, <span className="text-rose-600">spicier.</span>
+            <h1 className="text-2xl font-bold leading-snug md:text-3xl">
+              Kya aapki relationship mein woh excitement kho gayi hai? 💔
             </h1>
-            <p className="mt-4 text-lg text-gray-600">
-              Expert ebooks, coaches and stories for Indian couples. Instant PDF delivery.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link to="/shop" className="btn btn-primary">Browse ebooks</Link>
-              <Link to="/product/all-access-pass" className="btn btn-outline">All Access Pass</Link>
+            <div className="mt-3 text-3xl font-extrabold text-rose-600 md:text-4xl">
+              52 Weeks of S❤️‍🔥X Positions for a Spicier Love Life
+            </div>
+            <p className="mt-2 text-gray-600">Jo aap agle 365 dinon mein try kar sakte hain 🔥</p>
+            <div className="mt-4 flex flex-wrap gap-2 text-xs">
+              <span className="rounded-full bg-amber-100 px-3 py-1 font-semibold text-amber-700">⭐⭐⭐⭐ 2,210+ ratings</span>
+              <span className="rounded-full bg-gray-100 px-3 py-1 text-gray-600">📄 80+ Pages</span>
+              <span className="rounded-full bg-gray-100 px-3 py-1 text-gray-600">🇮🇳 Hindi / English</span>
+              <span className="rounded-full bg-gray-100 px-3 py-1 text-gray-600">⏱️ 3 min read</span>
+            </div>
+            <div className="mt-5">
+              <span className="rounded-full bg-green-600 px-2 py-1 text-xs font-bold text-white">40% off</span>
+              <div className="mt-2 flex items-end gap-2">
+                <span className="text-3xl font-bold">₹599</span>
+                <span className="pb-1 text-lg text-gray-400 line-through">₹999</span>
+              </div>
+              <Link to="/product/52-weeks-positions" className="btn btn-primary mt-3 !py-3 text-base">
+                Abhi Kharido — ₹599
+              </Link>
+              <div className="mt-2 text-xs text-gray-500">Hindi &amp; English · Instant PDF Download</div>
+              <div className="mt-1 flex items-center gap-2 text-xs text-gray-500">
+                <span className="text-amber-500">⭐⭐⭐⭐ 2,210+ verified ratings</span>
+                <span>· 50,000+ couples</span>
+              </div>
             </div>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {PRODUCTS.slice(0, 4).map((p) => (
-              <Link key={p.slug} to={`/product/${p.slug}`} className="card group transition hover:shadow-lg">
-                <img src={p.cover} alt={p.title} className="aspect-[3/4] w-full rounded-lg object-cover" />
-                <div className="mt-3 text-sm font-semibold group-hover:text-rose-600">{p.title}</div>
-                <div className="mt-1 text-sm text-gray-500">₹{p.price} <span className="text-xs text-gray-400 line-through">₹{p.original}</span></div>
-              </Link>
-            ))}
+          <div className="mx-auto w-full max-w-sm">
+            <Link to="/product/52-weeks-positions" className="block">
+              <img src="/covers/52-weeks-positions.webp" alt="52 Weeks Positions" className="aspect-[3/4] w-full rounded-2xl object-cover shadow-xl" />
+            </Link>
           </div>
         </div>
       </section>
@@ -162,8 +176,13 @@ function Shop() {
       </div>
       <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {PRODUCTS.map((p) => (
-          <Link key={p.slug} to={`/product/${p.slug}`} className="card group transition hover:shadow-lg">
-            <img src={p.cover} alt={p.title} className="aspect-[3/4] w-full rounded-lg object-cover" />
+          <Link key={p.slug} to={`/product/${p.slug}`} className="card group relative overflow-hidden transition hover:shadow-lg">
+            <div className="relative">
+              <img src={p.cover} alt={p.title} className="aspect-[3/4] w-full rounded-lg object-cover" />
+              <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/0 opacity-0 transition group-hover:bg-black/40 group-hover:opacity-100">
+                <span className="rounded-full bg-white px-4 py-2 text-xs font-bold text-gray-900">QUICK VIEW</span>
+              </div>
+            </div>
             <div className="mt-3 text-xs font-semibold uppercase tracking-wide text-rose-500">{p.category}</div>
             <div className="mt-1 text-sm font-semibold group-hover:text-rose-600">{p.title}</div>
             <div className="mt-1 text-xs text-gray-500">{p.tagline}</div>
