@@ -1,17 +1,12 @@
 import { BrowserRouter, Routes, Route, Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { supabase, PRODUCTS_TABLE, ORDERS_TABLE, LIBRARY_TABLE, WALLET_TABLE } from "./lib/supabase";
+import { supabase, PRODUCTS_TABLE, ORDERS_TABLE, LIBRARY_TABLE } from "./lib/supabase";
 import type { Product } from "./lib/supabase";
+import { PRODUCTS } from "./lib/products-data";
 
 // ---------- Header ----------
 function Header({ user, credits }: { user: any; credits: number }) {
   const [open, setOpen] = useState(false);
-  const nav = [
-    { label: "Ebooks", to: "/shop" },
-    { label: "Experts", to: "/experts" },
-    { label: "Blog", to: "/blog" },
-    { label: "My library", to: "/library" },
-  ];
   return (
     <header className="sticky top-0 z-40 border-b border-gray-200 bg-white/95 backdrop-blur">
       <div className="container-page flex h-16 items-center justify-between">
@@ -20,11 +15,9 @@ function Header({ user, credits }: { user: any; credits: number }) {
           Romance Unplugged
         </Link>
         <nav className="hidden items-center gap-6 text-sm font-medium text-gray-600 md:flex">
-          {nav.map((n) => (
-            <Link key={n.to} to={n.to} className="hover:text-rose-600">
-              {n.label}
-            </Link>
-          ))}
+          <Link to="/shop" className="hover:text-rose-600">All ebooks</Link>
+          <Link to="/blog" className="hover:text-rose-600">Blog</Link>
+          <Link to="/library" className="hover:text-rose-600">My library</Link>
         </nav>
         <div className="flex items-center gap-3">
           <Link to="/wallet" className="hidden rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700 sm:block">
@@ -46,7 +39,7 @@ function Header({ user, credits }: { user: any; credits: number }) {
               )}
             </div>
           ) : (
-            <Link to="/login" className="btn btn-primary !px-4 !py-2 text-xs">Sign in</Link>
+            <Link to="/login" className="btn btn-primary !px-4 !py-2 text-xs">Log in</Link>
           )}
         </div>
       </div>
@@ -76,7 +69,6 @@ function Footer() {
           <div className="flex flex-col gap-2 text-sm text-gray-500">
             <Link to="/blog">Blog</Link>
             <span className="text-gray-400">Couple Games — SOON</span>
-            <span className="text-gray-400">Free Downloads — SOON</span>
           </div>
         </div>
         <div>
@@ -102,7 +94,7 @@ function Footer() {
 }
 
 // ---------- Home ----------
-function Home({ products }: { products: Product[] }) {
+function Home() {
   return (
     <div>
       <section className="border-b border-gray-200 bg-gradient-to-b from-rose-50 to-white">
@@ -112,10 +104,10 @@ function Home({ products }: { products: Product[] }) {
               Expert relationship education
             </div>
             <h1 className="text-4xl font-bold leading-tight md:text-5xl">
-              Deeper connections, <span className="text-rose-600">one guide at a time.</span>
+              Your shelf, <span className="text-rose-600">spicier.</span>
             </h1>
             <p className="mt-4 text-lg text-gray-600">
-              Ebooks, coaches and stories built for real couples. Learn, practice and grow together.
+              Expert ebooks, coaches and stories for Indian couples. Instant PDF delivery.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link to="/shop" className="btn btn-primary">Browse ebooks</Link>
@@ -123,27 +115,32 @@ function Home({ products }: { products: Product[] }) {
             </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
-            {products.slice(0, 4).map((p) => (
-              <Link key={p.id} to={`/product/${p.slug}`} className="card group transition hover:shadow-lg">
-                <div className="flex aspect-[3/4] items-center justify-center rounded-lg bg-gradient-to-br from-rose-100 to-rose-50 text-4xl">
-                  📖
-                </div>
+            {PRODUCTS.slice(0, 4).map((p) => (
+              <Link key={p.slug} to={`/product/${p.slug}`} className="card group transition hover:shadow-lg">
+                <img src={p.cover} alt={p.title} className="aspect-[3/4] w-full rounded-lg object-cover" />
                 <div className="mt-3 text-sm font-semibold group-hover:text-rose-600">{p.title}</div>
-                <div className="mt-1 text-sm text-gray-500">₹{p.price}</div>
+                <div className="mt-1 text-sm text-gray-500">₹{p.price} <span className="text-xs text-gray-400 line-through">₹{p.original}</span></div>
               </Link>
             ))}
           </div>
         </div>
       </section>
       <section className="container-page py-14">
-        <h2 className="text-2xl font-bold">Featured ebooks</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold">All ebooks</h2>
+          <span className="text-xs text-gray-400">16 of 16 · Hindi + English · Instant PDF delivery</span>
+        </div>
         <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {products.map((p) => (
-            <Link key={p.id} to={`/product/${p.slug}`} className="card group transition hover:shadow-lg">
-              <div className="flex aspect-[3/4] items-center justify-center rounded-lg bg-gradient-to-br from-rose-100 to-rose-50 text-4xl">📖</div>
+          {PRODUCTS.map((p) => (
+            <Link key={p.slug} to={`/product/${p.slug}`} className="card group transition hover:shadow-lg">
+              <img src={p.cover} alt={p.title} className="aspect-[3/4] w-full rounded-lg object-cover" />
               <div className="mt-3 text-sm font-semibold group-hover:text-rose-600">{p.title}</div>
-              <div className="mt-1 text-xs text-gray-500">{p.subtitle}</div>
-              <div className="mt-2 text-sm font-bold text-rose-600">₹{p.price}</div>
+              <div className="mt-1 text-xs text-gray-500">{p.tagline}</div>
+              <div className="mt-2 flex items-center gap-2">
+                <span className="text-xs text-amber-500">{p.rating}★</span>
+                <span className="text-sm font-bold text-rose-600">₹{p.price}</span>
+                <span className="text-xs text-gray-400 line-through">₹{p.original}</span>
+              </div>
             </Link>
           ))}
         </div>
@@ -153,17 +150,29 @@ function Home({ products }: { products: Product[] }) {
 }
 
 // ---------- Shop ----------
-function Shop({ products }: { products: Product[] }) {
+function Shop() {
   return (
     <div className="container-page py-12">
-      <h1 className="text-3xl font-bold">All ebooks</h1>
-      <p className="mt-2 text-gray-500">Expert guides for deeper connection and intimacy.</p>
+      <h1 className="text-3xl font-bold">Your shelf, spicier.</h1>
+      <p className="mt-2 text-sm text-gray-500">All ebooks · 16 of 16 · Hindi + English · Instant PDF delivery</p>
+      <div className="mt-6 flex flex-wrap gap-2 text-xs">
+        {["All", "Positions", "First Time", "Wellness", "Ideas", "Mindset", "Communication", "Technique", "Partner"].map((c) => (
+          <span key={c} className="rounded-full border border-gray-200 px-3 py-1 text-gray-600">{c}</span>
+        ))}
+      </div>
       <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {products.map((p) => (
-          <Link key={p.id} to={`/product/${p.slug}`} className="card group transition hover:shadow-lg">
-            <div className="flex aspect-[3/4] items-center justify-center rounded-lg bg-gradient-to-br from-rose-100 to-rose-50 text-4xl">📖</div>
-            <div className="mt-3 text-sm font-semibold group-hover:text-rose-600">{p.title}</div>
-            <div className="mt-2 text-sm font-bold text-rose-600">₹{p.price}</div>
+        {PRODUCTS.map((p) => (
+          <Link key={p.slug} to={`/product/${p.slug}`} className="card group transition hover:shadow-lg">
+            <img src={p.cover} alt={p.title} className="aspect-[3/4] w-full rounded-lg object-cover" />
+            <div className="mt-3 text-xs font-semibold uppercase tracking-wide text-rose-500">{p.category}</div>
+            <div className="mt-1 text-sm font-semibold group-hover:text-rose-600">{p.title}</div>
+            <div className="mt-1 text-xs text-gray-500">{p.tagline}</div>
+            <div className="mt-2 flex items-center gap-2">
+              <span className="text-xs text-amber-500">{p.rating}★</span>
+              <span className="text-sm font-bold text-rose-600">₹{p.price}</span>
+              <span className="text-xs text-gray-400 line-through">₹{p.original}</span>
+              <span className="ml-auto rounded bg-green-100 px-1.5 py-0.5 text-[10px] font-bold text-green-700">SAVE ₹{p.original - p.price}</span>
+            </div>
           </Link>
         ))}
       </div>
@@ -171,55 +180,137 @@ function Shop({ products }: { products: Product[] }) {
   );
 }
 
-// ---------- Product ----------
-function Product({ products }: { products: Product[] }) {
+// ---------- Product (exact sales-page layout!) ----------
+function ProductPage() {
   const { slug } = useParams();
-  const product = products.find((p) => p.slug === slug);
+  const p = PRODUCTS.find((x) => x.slug === slug);
   const [user] = useAuth();
   const [owned, setOwned] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user && product) {
-      supabase.from(LIBRARY_TABLE).select("id").eq("user_id", user.id).eq("product_id", product.id).maybeSingle().then(({ data }) => setOwned(!!data));
+    if (user && p) {
+      supabase.from(LIBRARY_TABLE).select("id").eq("user_id", user.id).eq("product_id", p.slug).maybeSingle().then(({ data }) => setOwned(!!data));
     }
-  }, [user, product]);
+  }, [user, p]);
 
-  if (!product) return <div className="container-page py-20 text-center">Product not found</div>;
+  if (!p) return <div className="container-page py-20 text-center">Product not found</div>;
 
   async function buy() {
     if (!user) { navigate("/login"); return; }
-    // simulate the payment (UPI/COD flow would go here)
     const { error } = await supabase.from(ORDERS_TABLE).insert({
       user_id: user.id,
-      product_id: product.id,
-      amount: product.price,
+      product_id: p.slug,
+      amount: p.price,
       status: "paid",
     });
     if (!error) {
-      await supabase.from(LIBRARY_TABLE).insert({ user_id: user.id, product_id: product.id });
+      await supabase.from(LIBRARY_TABLE).insert({ user_id: user.id, product_id: p.slug });
       setOwned(true);
       alert("Purchase complete! Check your library.");
     }
   }
 
   return (
-    <div className="container-page grid gap-10 py-12 md:grid-cols-2">
-      <div>
-        <div className="flex aspect-[3/4] items-center justify-center rounded-2xl bg-gradient-to-br from-rose-100 to-rose-50 text-6xl">📖</div>
-      </div>
-      <div>
-        <div className="text-xs font-semibold uppercase tracking-wide text-rose-600">{product.type}</div>
-        <h1 className="mt-2 text-3xl font-bold">{product.title}</h1>
-        <p className="mt-2 text-gray-600">{product.subtitle}</p>
-        <div className="mt-4 text-2xl font-bold">₹{product.price}</div>
-        <p className="mt-4 leading-relaxed text-gray-600">{product.description}</p>
-        {owned ? (
-          <Link to="/library" className="btn btn-primary mt-6">Read in library</Link>
-        ) : (
-          <button onClick={buy} className="btn btn-primary mt-6 w-full md:w-auto">Buy now</button>
-        )}
-      </div>
+    <div>
+      {/* HERO */}
+      <section className="border-b border-gray-200 bg-gradient-to-b from-rose-50 to-white">
+        <div className="container-page grid items-center gap-10 py-14 md:grid-cols-2">
+          <div>
+            <div className="mb-3 text-sm font-bold uppercase tracking-wide text-rose-600">{p.category}</div>
+            <h1 className="text-3xl font-bold leading-tight md:text-4xl">{p.h1}</h1>
+            <p className="mt-3 text-gray-600">{p.heroSub}</p>
+            <div className="mt-5 grid gap-2 text-sm">
+              {p.props.map((x) => <div key={x} className="flex items-center gap-2"><span className="text-lg">{x.split(" ")[0]}</span><span>{x.slice(x.indexOf(" ") + 1)}</span></div>)}
+            </div>
+            <div className="mt-5 flex flex-wrap gap-2 text-xs">
+              <span className="rounded-full bg-amber-100 px-3 py-1 font-semibold text-amber-700">⭐⭐⭐⭐ {p.reviewLabel}</span>
+              <span className="rounded-full bg-gray-100 px-3 py-1 text-gray-600">📄 {p.pagesLabel}</span>
+              <span className="rounded-full bg-gray-100 px-3 py-1 text-gray-600">🇮🇳 Hindi / English</span>
+              <span className="rounded-full bg-rose-100 px-3 py-1 font-semibold text-rose-700">🏆 {p.badge}</span>
+            </div>
+          </div>
+          <div>
+            <div className="card relative overflow-hidden">
+              <div className="absolute right-3 top-3 rounded-full bg-green-600 px-2 py-1 text-[10px] font-bold text-white">{p.discount}% off</div>
+              <img src={p.cover} alt={p.title} className="aspect-[3/4] w-full rounded-xl object-cover" />
+              <div className="mt-4 flex items-end gap-2">
+                <span className="text-3xl font-bold">₹{p.price}</span>
+                <span className="pb-1 text-sm text-gray-400 line-through">₹{p.original}</span>
+              </div>
+              <button onClick={buy} className="btn btn-primary mt-3 w-full !py-3 text-base">
+                {owned ? "✓ Purchased — Open in library" : `Unlock ${p.shortTitle} — ₹${p.price} 🔥`}
+              </button>
+              {owned ? (
+                <Link to="/library" className="btn btn-outline mt-2 w-full !py-2 text-sm">Open in library</Link>
+              ) : null}
+              <div className="mt-3 text-center text-xs text-gray-500">Hindi &amp; English · Aaj raat se shuru 😈</div>
+              <div className="mt-2 flex items-center justify-center gap-2 text-xs">
+                <span className="text-amber-500">⭐⭐⭐⭐ {p.reviewLabel}</span>
+                <span>· {p.couplesLabel}</span>
+              </div>
+              <div className="mt-3 rounded-lg bg-green-50 p-2 text-center text-[11px] font-semibold text-green-700">
+                ✅ SAFE &amp; SECURE CHECKOUT — ALL PAYMENT METHODS ACCEPTED
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* PAIN POINTS */}
+      <section className="container-page py-12">
+        <h2 className="text-center text-2xl font-bold">SACH BATAO</h2>
+        <p className="mt-1 text-center text-gray-500">Bedroom mein yeh hota hai tumhare saath? 😬</p>
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {p.pains.map((x) => (
+            <div key={x} className="card text-center">
+              <div className="text-2xl">😬</div>
+              <p className="mt-2 text-sm text-gray-600">{x}</p>
+            </div>
+          ))}
+        </div>
+        <p className="mt-6 text-center text-sm text-gray-500">{p.painNote}</p>
+      </section>
+
+      {/* STORY */}
+      <section className="border-y border-gray-100 bg-white py-12">
+        <div className="container-page max-w-3xl">
+          <h2 className="text-2xl font-bold">MERI STORY</h2>
+          <div className="mt-4 space-y-3 text-gray-600">
+            <p>"{p.story}"</p>
+            <p className="text-sm">— Dr. Myra, Founder — Romance Unplugged</p>
+          </div>
+        </div>
+      </section>
+
+      {/* BENEFITS */}
+      <section className="container-page py-12">
+        <h2 className="text-2xl font-bold">{p.benefitTitle}</h2>
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {p.benefits.map((b) => (
+            <div key={b.title} className="card">
+              <div className="text-2xl">{b.emoji}</div>
+              <div className="mt-2 font-semibold">{b.title}</div>
+              <p className="mt-1 text-sm text-gray-500">{b.text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="border-t border-gray-100 bg-white py-12">
+        <div className="container-page max-w-3xl">
+          <h2 className="text-2xl font-bold">FAQ</h2>
+          <div className="mt-6 space-y-4">
+            {p.faqs.map((f) => (
+              <details key={f.q} className="card">
+                <summary className="cursor-pointer font-semibold">{f.q}</summary>
+                <p className="mt-2 text-sm text-gray-600">{f.a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
@@ -238,18 +329,12 @@ function Login() {
         ? await supabase.auth.signInWithOtp({ email })
         : await supabase.auth.signInWithPassword({ email, password });
     if (error) setMsg(error.message);
-    else {
-      setMsg(mode === "magic" ? "Magic link sent! Check your email." : "Welcome back!");
-      setTimeout(() => navigate("/"), 1200);
-    }
+    else { setMsg("Welcome back!"); setTimeout(() => navigate("/"), 1200); }
   }
-
   async function signUp() {
     const { error } = await supabase.auth.signUp({ email, password });
     if (error) setMsg(error.message);
-    else {
-      setMsg("Account created! Check your email to confirm, then sign in.");
-    }
+    else setMsg("Account created! Check your email to confirm, then sign in.");
   }
 
   return (
@@ -276,8 +361,7 @@ function Login() {
             {mode === "password" ? "Use a magic link instead" : "Use a password instead"}
           </button>
           <div className="mt-4 border-t border-gray-100 pt-4 text-center text-sm">
-            No account?{" "}
-            <button onClick={signUp} className="font-semibold text-rose-600">Sign up</button>
+            No account? <button onClick={signUp} className="font-semibold text-rose-600">Sign up</button>
           </div>
           {msg && <div className="mt-3 rounded-lg bg-rose-50 p-3 text-sm text-rose-700">{msg}</div>}
         </div>
@@ -302,8 +386,8 @@ function Library({ user }: { user: any }) {
         {items.map((it) => (
           <div key={it.id} className="card">
             <div className="flex aspect-[16/9] items-center justify-center rounded-lg bg-gradient-to-br from-rose-100 to-rose-50 text-3xl">📖</div>
-            <div className="mt-3 font-semibold">{it.products?.title}</div>
-            <button className="btn btn-primary mt-3 w-full !py-2 text-xs" onClick={() => alert("Content delivery: " + it.products?.title)}>Open</button>
+            <div className="mt-3 font-semibold">{it.products?.title || it.product_id}</div>
+            <button className="btn btn-primary mt-3 w-full !py-2 text-xs" onClick={() => alert("Content delivery: " + (it.products?.title || it.product_id))}>Open</button>
           </div>
         ))}
       </div>
@@ -312,7 +396,7 @@ function Library({ user }: { user: any }) {
 }
 
 // ---------- Wallet ----------
-function Wallet({ user, credits }: { user: any; credits: number }) {
+function Wallet({ credits }: { credits: number }) {
   return (
     <div className="container-page py-12">
       <h1 className="text-3xl font-bold">Wallet</h1>
@@ -330,30 +414,15 @@ function Wallet({ user, credits }: { user: any; credits: number }) {
 // ---------- Admin ----------
 function Admin() {
   const [user] = useAuth();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [form, setForm] = useState({ title: "", subtitle: "", description: "", price: 299, slug: "", type: "ebook" });
+  const [form, setForm] = useState({ title: "", price: 299, type: "ebook" });
   const [msg, setMsg] = useState("");
-
-  useEffect(() => { if (user) load(); }, [user]);
-  async function load() {
-    const { data } = await supabase.from(PRODUCTS_TABLE).select("*").order("created_at", { ascending: false });
-    setProducts(data || []);
-  }
+  if (!user) return <div className="container-page py-20 text-center"><Link to="/login" className="text-rose-600">Sign in to access the admin panel</Link></div>;
   async function save() {
-    const slug = form.slug || form.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
     const { error } = await supabase.from(PRODUCTS_TABLE).insert({
-      ...form, slug, currency: "INR", status: "active", cover_url: "", content: "",
+      slug: form.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"), title: form.title, price: form.price, type: form.type, status: "active",
     });
     setMsg(error ? "Error: " + error.message : "Product added!");
-    if (!error) { setForm({ title: "", subtitle: "", description: "", price: 299, slug: "", type: "ebook" }); load(); }
   }
-  async function remove(id: string) {
-    await supabase.from(PRODUCTS_TABLE).delete().eq("id", id);
-    load();
-  }
-
-  if (!user) return <div className="container-page py-20 text-center"><Link to="/login" className="text-rose-600">Sign in to access the admin panel</Link></div>;
-
   return (
     <div className="container-page py-12">
       <h1 className="text-3xl font-bold">Admin panel</h1>
@@ -363,44 +432,28 @@ function Admin() {
           <h2 className="text-lg font-bold">Add product</h2>
           <div className="mt-4 grid gap-3">
             <input className="input" placeholder="Title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
-            <input className="input" placeholder="Subtitle" value={form.subtitle} onChange={(e) => setForm({ ...form, subtitle: e.target.value })} />
-            <textarea className="input" placeholder="Description" rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
             <div className="grid grid-cols-2 gap-3">
               <input className="input" type="number" placeholder="Price ₹" value={form.price} onChange={(e) => setForm({ ...form, price: Number(e.target.value) })} />
               <select className="input" value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}>
                 <option value="ebook">Ebook</option>
                 <option value="course">Course</option>
-                <option value="pass">All Access Pass</option>
-                <option value="consultation">Consultation</option>
+                <option value="pass">Pass</option>
               </select>
             </div>
             <button onClick={save} className="btn btn-primary">Save product</button>
             {msg && <div className="rounded-lg bg-rose-50 p-3 text-sm text-rose-700">{msg}</div>}
           </div>
         </div>
-        <div>
-          <h2 className="text-lg font-bold">Products ({products.length})</h2>
-          <div className="mt-4 flex flex-col gap-3">
-            {products.map((p) => (
-              <div key={p.id} className="card flex items-center justify-between">
-                <div>
-                  <div className="font-semibold">{p.title}</div>
-                  <div className="text-xs text-gray-500">₹{p.price} · {p.type} · {p.status}</div>
-                </div>
-                <div className="flex gap-2">
-                  <Link to={`/product/${p.slug}`} className="text-sm text-rose-600">View</Link>
-                  <button onClick={() => remove(p.id)} className="text-sm text-gray-400 hover:text-rose-600">Delete</button>
-                </div>
-              </div>
-            ))}
-          </div>
+        <div className="card">
+          <h2 className="text-lg font-bold">Static catalog ({PRODUCTS.length} ebooks)</h2>
+          <p className="mt-2 text-sm text-gray-500">The 16 ebooks are bundled with the app — no database needed. Database products appear in the Admin once the SQL is run.</p>
         </div>
       </div>
     </div>
   );
 }
 
-// ---------- Auth hook ----------
+// ---------- Auth ----------
 function useAuth(): [any, number] {
   const [user, setUser] = useState<any>(null);
   const [credits, setCredits] = useState(0);
@@ -419,25 +472,19 @@ function useAuth(): [any, number] {
 // ---------- App ----------
 export default function App() {
   const [user, credits] = useAuth();
-  const [products, setProducts] = useState<Product[]>([]);
-  useEffect(() => {
-    supabase.from(PRODUCTS_TABLE).select("*").eq("status", "active").order("created_at", { ascending: false }).then(({ data }) => setProducts(data || []));
-  }, []);
-
   return (
     <BrowserRouter>
       <div className="flex min-h-screen flex-col">
         <Header user={user} credits={credits} />
         <main className="flex-1">
           <Routes>
-            <Route path="/" element={<Home products={products} />} />
-            <Route path="/shop" element={<Shop products={products} />} />
-            <Route path="/product/:slug" element={<Product products={products} />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/shop" element={<Shop />} />
+            <Route path="/product/:slug" element={<ProductPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/library" element={<Library user={user} />} />
-            <Route path="/wallet" element={<Wallet user={user} credits={credits} />} />
+            <Route path="/wallet" element={<Wallet credits={credits} />} />
             <Route path="/admin" element={<Admin />} />
-            <Route path="/experts" element={<div className="container-page py-20 text-center text-gray-500">Experts directory coming soon.</div>} />
             <Route path="/blog" element={<div className="container-page py-20 text-center text-gray-500">Blog coming soon.</div>} />
             <Route path="/about" element={<div className="container-page py-20 text-center text-gray-500">About us — coming soon.</div>} />
             <Route path="/contact" element={<div className="container-page py-20 text-center text-gray-500">Contact us — coming soon.</div>} />
